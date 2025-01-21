@@ -30,6 +30,7 @@ A equipe de Cloud recebeu a responsabilidade de provisionar a infraestrutura nec
 ### Deployment da Aplicação
 
 - A variavel de ambiente SPD_KEY_VAULT_URI deve conter a Uri do key vault. Ex: `https://mykeyvault.vault.azure.net/`
+- Container image: `schwendler/embarque-ti-spd-project`
 - A secret com a connection string deve ser definida com o nome: `db-connection-string`
 - O pod da aplicação deve recuperar automaticamente a string de conexão do Key Vault.
 - Aplicação irá rodar na porta 8080
