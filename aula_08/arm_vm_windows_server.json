@@ -1,0 +1,241 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {},
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2024-03-01",
+      "name": "vm-spd8-dev-brs-001-nsg",
+      "location": "brazilsouth",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "RDP",
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups/securityRules', 'vm-spd8-dev-brs-001-nsg', 'RDP')]",
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "properties": {
+              "protocol": "TCP",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 300,
+              "direction": "Inbound",
+              "sourcePortRanges": [],
+              "destinationPortRanges": [],
+              "sourceAddressPrefixes": [],
+              "destinationAddressPrefixes": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2024-03-01",
+      "name": "vm-spd8-dev-brs-001-ip",
+      "location": "brazilsouth",
+      "sku": {
+        "name": "Standard",
+        "tier": "Regional"
+      },
+      "properties": {
+        "ipAddress": "4.201.198.41",
+        "publicIPAddressVersion": "IPv4",
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 4,
+        "ipTags": []
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2024-03-01",
+      "name": "vnet-spd8-dev-brs-001",
+      "location": "brazilsouth",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "10.24.0.0/16"
+          ]
+        },
+        "privateEndpointVNetPolicies": "Disabled",
+        "subnets": [
+          {
+            "name": "lab",
+            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'vnet-spd8-dev-brs-001', 'lab')]",
+            "properties": {
+              "addressPrefix": "10.24.1.0/24",
+              "delegations": [],
+              "privateEndpointNetworkPolicies": "Disabled",
+              "privateLinkServiceNetworkPolicies": "Enabled"
+            },
+            "type": "Microsoft.Network/virtualNetworks/subnets"
+          }
+        ],
+        "virtualNetworkPeerings": [],
+        "enableDdosProtection": false
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2024-07-01",
+      "name": "vm-spd8-dev-brs-001",
+      "location": "brazilsouth",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', 'vm-spd8-dev-brs-001462')]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D2s_v3"
+        },
+        "additionalCapabilities": {
+          "hibernationEnabled": false
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2022-datacenter-azure-edition",
+            "version": "latest"
+          },
+          "osDisk": {
+            "osType": "Windows",
+            "name": "vm-spd8-dev-brs-001_OsDisk_1_30749007a09245d9b88f526f86bc3625",
+            "createOption": "FromImage",
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS"
+            },
+            "deleteOption": "Delete",
+            "diskSizeGB": 127
+          },
+          "dataDisks": [],
+          "diskControllerType": "SCSI"
+        },
+        "osProfile": {
+          "computerName": "vm-spd8-dev-brs",
+          "adminUsername": "ada",
+          "adminPassword": "!6hL5!%MOq$b$wzO",
+          "windowsConfiguration": {
+            "provisionVMAgent": true,
+            "enableAutomaticUpdates": true,
+            "patchSettings": {
+              "patchMode": "AutomaticByOS",
+              "assessmentMode": "ImageDefault",
+              "enableHotpatching": false
+            }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'vm-spd8-dev-brs-001462')]",
+              "properties": {
+                "deleteOption": "Delete"
+              }
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        },
+        "priority": "Spot",
+        "evictionPolicy": "Delete",
+        "billingProfile": {
+          "maxPrice": -1
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+      "apiVersion": "2024-03-01",
+      "name": "vm-spd8-dev-brs-001-nsg/RDP",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', 'vm-spd8-dev-brs-001-nsg')]"
+      ],
+      "properties": {
+        "protocol": "TCP",
+        "sourcePortRange": "*",
+        "destinationPortRange": "3389",
+        "sourceAddressPrefix": "*",
+        "destinationAddressPrefix": "*",
+        "access": "Allow",
+        "priority": 300,
+        "direction": "Inbound",
+        "sourcePortRanges": [],
+        "destinationPortRanges": [],
+        "sourceAddressPrefixes": [],
+        "destinationAddressPrefixes": []
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2024-03-01",
+      "name": "vnet-spd8-dev-brs-001/lab",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vnet-spd8-dev-brs-001')]"
+      ],
+      "properties": {
+        "addressPrefix": "10.24.1.0/24",
+        "delegations": [],
+        "privateEndpointNetworkPolicies": "Disabled",
+        "privateLinkServiceNetworkPolicies": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2024-03-01",
+      "name": "vm-spd8-dev-brs-001462",
+      "location": "brazilsouth",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'vm-spd8-dev-brs-001-ip')]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'vnet-spd8-dev-brs-001', 'lab')]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', 'vm-spd8-dev-brs-001-nsg')]"
+      ],
+      "kind": "Regular",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "id": "[concat(resourceId('Microsoft.Network/networkInterfaces', 'vm-spd8-dev-brs-001462'), '/ipConfigurations/ipconfig1')]",
+            "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
+            "properties": {
+              "privateIPAddress": "10.24.1.4",
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'vm-spd8-dev-brs-001-ip')]",
+                "properties": {
+                  "deleteOption": "Delete"
+                }
+              },
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'vnet-spd8-dev-brs-001', 'lab')]"
+              },
+              "primary": true,
+              "privateIPAddressVersion": "IPv4"
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableAcceleratedNetworking": true,
+        "enableIPForwarding": false,
+        "disableTcpStateTracking": false,
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'vm-spd8-dev-brs-001-nsg')]"
+        },
+        "nicType": "Standard",
+        "auxiliaryMode": "None",
+        "auxiliarySku": "None"
+      }
+    }
+  ]
+}
