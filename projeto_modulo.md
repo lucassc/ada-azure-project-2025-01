@@ -34,6 +34,7 @@ A equipe de Cloud recebeu a responsabilidade de provisionar a infraestrutura nec
 - A secret com a connection string deve ser definida com o nome: `db-connection-string`
 - O pod da aplicação deve recuperar automaticamente a string de conexão do Key Vault.
 - Aplicação irá rodar na porta 8080
+- Banco de dados esperado: Microsoft SQL Server
 
 ## Entrega
 

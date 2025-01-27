@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: projeto
+  name: projeto
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: projeto
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: projeto
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: projeto-sa
+      containers:
+      - image: schwendler/embarque-ti-spd-project
+        name: embarque-ti-spd-project
+        ports:
+        - containerPort: 8080
+        resources: {}
+        env:
+          - name: SPD_KEY_VAULT_URI
+            value: https://kv-spd9-prod-brs-001.vault.azure.net/
+status: {}

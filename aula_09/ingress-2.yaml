@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  creationTimestamp: null
+  name: projeto-ingress-2
+spec:
+  ingressClassName: webapprouting.kubernetes.azure.com
+  rules:
+  - host: spd.com
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: projeto
+            port:
+              number: 8080
+        pathType: Prefix
+status:
+  loadBalancer: {}
